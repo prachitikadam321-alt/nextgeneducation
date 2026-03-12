@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Microproject: Computers in Education</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --secondary: #3a7bd5;
+            --dark: #0b0e14;
+            --accent: #00ff88;
+            --glass: rgba(255, 255, 255, 0.98);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url("https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1920") fixed center/cover;
+            color: #333;
+        }
+
+        /* --- Top Developer Bar --- */
+        header {
+            background: linear-gradient(45deg, #0f1c2e, #162e4a);
+            color: white;
+            text-align: center;
+            padding: 100px 20px;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            color: var(--primary);
+            text-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        nav {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            padding: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        nav a:hover { color: var(--primary); }
+
+        /* --- Floating Navigation Controls --- */
+        .side-nav-controls {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 9999;
+        }
+
+        .scroll-action {
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 28, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .scroll-action svg {
+            width: 20px;
+            fill: var(--primary);
+            transition: 0.3s;
+        }
+
+        .scroll-action:hover {
+            background: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .scroll-action:hover svg {
+            fill: #000;
+        }
+
+        /* Tooltip style */
+        .scroll-action::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: 65px;
+            background: var(--dark);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s;
+            border: 1px solid var(--secondary);
+        }
+
+        .scroll-action:hover::before {
+            opacity: 1;
+        }
+
+        /* Hide "Up" button when at top */
+        #goUp {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        #goUp.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        section {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 50px;
+            background: var(--glass);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        h2 {
+            color: var(--dark);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.2rem;
+            border-left: 8px solid var(--secondary);
+            padding-left: 20px;
+            margin-bottom: 40px;
+        }
+
+        .content-block {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .content-text { flex: 1; min-width: 300px; }
+        
+        .content-image {
+            flex: 1;
+            min-width: 300px;
+            height: 350px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            position: relative;
+        }
+
+        .content-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .content-image:hover img { transform: scale(1.08); filter: brightness(70%); }
+
+        .img-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            opacity: 0;
+            transition: 0.3s;
+            pointer-events: none;
+        }
+        .content-image:hover .img-overlay { opacity: 1; }
+
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            transition: 0.3s;
+            border: 1px solid #f0f0f0;
+        }
+
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 200px; object-fit: cover; }
+        .card-body { padding: 25px; }
+
+        .form-container {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--dark); }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: var(--secondary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover { background: var(--dark); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+        footer {
+            background: #020617;
+            color: #94a3b8;
+            padding: 80px 20px 20px;
+            margin-top: 100px;
+        }
+
+        .footer-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .footer-col h4 { color: white; margin-bottom: 20px; font-family: 'Montserrat'; text-transform: uppercase; font-size: 0.9rem; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            section { padding: 30px; }
+            .content-block { flex-direction: column; }
+            .side-nav-controls { right: 15px; bottom: 20px; }
+        }
+    </style>
+</head>
+<body id="top">
+
+<div class="side-nav-controls">
+    <a href="#top" id="goUp" class="scroll-action" data-tooltip="Back to Top">
+        <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+    </a>
+    <a href="#bottom" class="scroll-action" data-tooltip="To Bottom">
+        <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+    </a>
+</div>
+
+<header>
+    <h1>USES OF COMPUTERS IN EDUCATION</h1>
+    <p style="color: #94a3b8; font-size: 1.1rem; margin-top: 15px;">MSBTE Microproject | Academic Session 2026</p>
+     <p> DEVELOPED BY: <b>SUHAN PAMNANI</b> • <b>PRACHITI KADAM</b> • <b>PRANAV GUPTA</b></p>
+</header>
+
+<nav>
+    <a href="#intro">Overview</a>
+    <a href="#ai">AI & Tech</a>
+    <a href="#platforms">Resources</a>
+    <a href="#feedback">Feedback</a>
+</nav>
+
+<section id="intro">
+    <h2>1. Educational Transformation</h2>
+    <div class="content-block">
+        <div class="content-text">
+            <p>Computers have evolved into the primary medium of education. In modern engineering colleges, they serve as the bridge between theoretical data and industrial application.</p>
+            <p><i>Click the image to explore modern learning research.</i></p>
+        </div>
+        <a href="https://www.edutopia.org/" target="_blank" class="content-image">
+            <img src="https://images.unsplash.com/photo-1501504905252-473c47e087f8?auto=format&fit=crop&w=800" alt="Student studying">
+            <div class="img-overlay">EXPLORE EDUTOPIA</div>
+        </a>
+    </div>
+</section>
+
+<section id="ai">
+    <h2>2. AI & Virtual Simulation</h2>
+    <div class="grid-cards">
+        <div class="card">
+            <a href="https://openai.com" target="_blank">
+                <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800" alt="AI Brain">
+            </a>
+            <div class="card-body">
+                <h4>AI Assistance</h4>
+                <p>AI helps in solving complex engineering algorithms and providing 24/7 doubt resolution.</p>
+            </div>
+        </div>
+        <div class="card">
+            <a href="https://vlab.co.in/" target="_blank">
+                <img src="https://images.unsplash.com/photo-1622979135225-d2ba269cf1ac?auto=format&fit=crop&w=800" alt="VR Lab">
+            </a>
+            <div class="card-body">
+                <h4>Virtual Labs</h4>
+                <p>Perform high-risk mechanical and electrical experiments in a safe digital environment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="platforms">
+    <h2>3. Leading Educational Resources</h2>
+    <div class="grid-cards">
+        <div class="card" style="text-align: center;">
+            <a href="https://www.wikipedia.org" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/63/Wikipedia-logo.png" style="height: 120px; object-fit: contain; padding: 20px;">
+            </a>
+            <div class="card-body">
+                <h4>Wikipedia</h4>
+                <p>The global encyclopedia for technical research and data.</p>
+                <a href="https://www.wikipedia.org" target="_blank" class="btn">Visit Wikipedia</a>
+            </div>
+        </div>
+        <div class="card" style="text-align: center;">
+            <a href="https://www.coursera.org" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Coursera-Logo_600x600.svg" style="height: 120px; object-fit: contain; padding: 20px;">
+            </a>
+            <div class="card-body">
+                <h4>Coursera</h4>
+                <p>Certified courses from Google, IBM, and top-tier universities.</p>
+                <a href="https://www.coursera.org" target="_blank" class="btn">Visit Coursera</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="feedback">
+    <h2>4. Project Feedback</h2>
+    <div class="form-container">
+        <form action="#" method="post" onsubmit="alert('Thank you for your feedback!'); return false;">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="rating">Rate the Project (1-5)</label>
+                <input type="number" id="rating" name="rating" min="1" max="5" value="5">
+            </div>
+            <div class="form-group">
+                <label for="comments">Comments / Suggestions</label>
+                <textarea id="comments" name="comments" rows="5" placeholder="What did you think of the design and content?"></textarea>
+            </div>
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+    </div>
+</section>
+
+<footer id="bottom">
+    <div class="footer-grid">
+        <div class="footer-col">
+            <h4>Student Details</h4>
+            <p><b>Class:</b> CO2K-A</p>
+            <p><b>Course:</b> Diploma in Computer Engineering</p>
+            <p><b>Subject:</b> Web Page Designing</p>
+        </div>
+        <div class="footer-col">
+            <h4>Project Team</h4>
+            <p>Suhan Pamnani <small>(Roll No: 49)</small></p>
+            <p>Prachiti Kadam <small>(Roll No: 50)</small></p>
+            <p>Pranav Gupta <small>(Roll No: 51)</small></p>
+        </div>
+        <div class="footer-col">
+            <h4>Institutional Info</h4>
+            <p>Year: 1st Year (2026)</p>
+            <p>Semester: 2nd Semester</p>
+            <p>Project: Micro-submission</p>
+        </div>
+    </div>
+    <div style="text-align: center; margin-top: 50px; font-size: 0.8rem; color: #475569;">
+        &copy; 2026 | MSBTE Diploma Microproject | Created with HTML5 & CSS3
+    </div>
+</footer>
+
+<script>
+    // Logic to show/hide the Up button based on scroll position
+    const goUpBtn = document.getElementById('goUp');
+    
+    window.onscroll = function() {
+        if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+            goUpBtn.classList.add('visible');
+        } else {
+            goUpBtn.classList.remove('visible');
+        }
+    };
+</script>
+
+</body>
+  </html>
